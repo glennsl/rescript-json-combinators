@@ -1,0 +1,11 @@
+{
+  "name": "@glennsl/rescript-json-combinators",
+  "namespace": "JsonCombinators",
+  "sources": [
+    "src",
+    {
+      "dir": "examples",
+      "type": "dev"
+    }
+  ]
+}
