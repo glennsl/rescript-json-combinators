@@ -15,6 +15,8 @@ module Error = {
 
 let custom = f => f
 
+let id = (. json) => json
+
 let float = (. json) => {
   if Js.typeof(json) != "number" {
     Error.expected("float", json)
@@ -73,7 +75,19 @@ let array = (decode, . json) => {
   target
 }
 
-let pair = (decodeA, decodeB, . json) => {
+let list = (decode, . json) => array(decode)(. json)->Array.to_list
+
+let option = (decode, . json) => {
+  if Obj.magic(json) == Js.null {
+    None
+  } else {
+    Some(decode(. json))
+  }
+}
+
+let date = (. json) => string(. json)->Js.Date.fromString
+
+let tuple2 = (decodeA, decodeB, . json) => {
   if !Js.Array.isArray(json) {
     Error.expected("array", json)
   }
@@ -91,12 +105,63 @@ let pair = (decodeA, decodeB, . json) => {
   | DecodeError(msg) => raise(DecodeError(j`${msg}\n\tin pair`))
   }
 }
+let pair = tuple2
 
-let option = (decode, . json) => {
-  if Obj.magic(json) == Js.null {
-    None
-  } else {
-    Some(decode(. json))
+let tuple3 = (decodeA, decodeB, decodeC, . json) => {
+  if !Js.Array.isArray(json) {
+    Error.expected("array", json)
+  }
+
+  let arr: array<Js.Json.t> = Obj.magic(json)
+  if Array.length(arr) != 3 {
+    raise(
+      DecodeError(
+        `Expected array of length 3, got array of length ${Array.length(arr)->string_of_int}`,
+      ),
+    )
+  }
+
+  try (
+    decodeA(. arr->Array.unsafe_get(0)),
+    decodeB(. arr->Array.unsafe_get(1)),
+    decodeC(. arr->Array.unsafe_get(2)),
+  ) catch {
+  | DecodeError(msg) => raise(DecodeError(j`${msg}\n\tin pair`))
+  }
+}
+
+let tuple4 = (decodeA, decodeB, decodeC, decodeD, . json) => {
+  if !Js.Array.isArray(json) {
+    Error.expected("array", json)
+  }
+
+  let arr: array<Js.Json.t> = Obj.magic(json)
+  if Array.length(arr) != 4 {
+    raise(
+      DecodeError(
+        `Expected array of length 4, got array of length ${Array.length(arr)->string_of_int}`,
+      ),
+    )
+  }
+
+  try (
+    decodeA(. arr->Array.unsafe_get(0)),
+    decodeB(. arr->Array.unsafe_get(1)),
+    decodeC(. arr->Array.unsafe_get(2)),
+    decodeD(. arr->Array.unsafe_get(3)),
+  ) catch {
+  | DecodeError(msg) => raise(DecodeError(j`${msg}\n\tin pair`))
+  }
+}
+
+let dict = (decode, . json) => {
+  if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
+    Error.expected("object", json)
+  }
+
+  let source: Js.Dict.t<Js.Json.t> = Obj.magic(json)
+  try Js.Dict.map(decode, source)->Obj.magic catch {
+  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin dict'`))
   }
 }
 

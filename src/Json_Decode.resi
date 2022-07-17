@@ -13,13 +13,23 @@ module Error: {
 
 let custom: ((. Js.Json.t) => 'a) => t<'a>
 
+let id: t<Js.Json.t>
+
 let float: t<float>
 let int: t<int>
 let bool: t<bool>
 let string: t<string>
+
 let array: t<'a> => t<array<'a>>
-let pair: (t<'a>, t<'b>) => t<('a, 'b)>
+let list: t<'a> => t<list<'a>>
 let option: t<'a> => t<option<'a>>
+
+let date: t<Js.Date.t>
+let pair: (t<'a>, t<'b>) => t<('a, 'b)>
+let tuple2: (t<'a>, t<'b>) => t<('a, 'b)>
+let tuple3: (t<'a>, t<'b>, t<'c>) => t<('a, 'b, 'c)>
+let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>) => t<('a, 'b, 'c, 'd)>
+let dict: t<'a> => t<Js.Dict.t<'a>>
 let field: (string, t<'a>) => t<'a>
 let object: (fieldDecoders => 'a) => t<'a>
 
