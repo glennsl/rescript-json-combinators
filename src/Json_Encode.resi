@@ -19,14 +19,13 @@ let tuple3: (t<'a>, t<'b>, t<'c>, ('a, 'b, 'c)) => Js.Json.t
 let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>, ('a, 'b, 'c, 'd)) => Js.Json.t
 let dict: (t<'a>, Js.Dict.t<'a>) => Js.Json.t
 
-module Composite: {
-  external jsonDict: Js.Dict.t<Js.Json.t> => Js.Json.t = "%identity"
-  external jsonArray: array<Js.Json.t> => Js.Json.t = "%identity"
-  external stringArray: array<string> => Js.Json.t = "%identity"
-  external intArray: array<int> => Js.Json.t = "%identity"
-  external floatArray: array<float> => Js.Json.t = "%identity"
-  external boolArray: array<bool> => Js.Json.t = "%identity"
-}
+// Short-hands for zero-cost composite primitives
+external jsonDict: Js.Dict.t<Js.Json.t> => Js.Json.t = "%identity"
+external jsonArray: array<Js.Json.t> => Js.Json.t = "%identity"
+external stringArray: array<string> => Js.Json.t = "%identity"
+external intArray: array<int> => Js.Json.t = "%identity"
+external floatArray: array<float> => Js.Json.t = "%identity"
+external boolArray: array<bool> => Js.Json.t = "%identity"
 
 module Unsafe: {
   external object: {..} => Js.Json.t = "%identity"
