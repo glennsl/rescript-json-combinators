@@ -22,6 +22,7 @@ let string: t<string>
 
 let array: t<'a> => t<array<'a>>
 let list: t<'a> => t<list<'a>>
+let object: (fieldDecoders => 'a) => t<'a>
 let option: t<'a> => t<option<'a>>
 
 let date: t<Js.Date.t>
@@ -31,7 +32,6 @@ let tuple3: (t<'a>, t<'b>, t<'c>) => t<('a, 'b, 'c)>
 let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>) => t<('a, 'b, 'c, 'd)>
 let dict: t<'a> => t<Js.Dict.t<'a>>
 let field: (string, t<'a>) => t<'a>
-let object: (fieldDecoders => 'a) => t<'a>
 
 let oneOf: array<t<'a>> => t<'a>
 let map: (t<'a>, (. 'a) => 'b) => t<'b>

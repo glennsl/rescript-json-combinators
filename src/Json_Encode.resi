@@ -8,6 +8,7 @@ external string: string => Js.Json.t = "%identity"
 @val external null: Js.Json.t = "null"
 let array: t<'a> => t<array<'a>>
 let list: t<'a> => t<list<'a>>
+let object: array<(string, Js.Json.t)> => Js.Json.t
 let option: t<'a> => t<option<'a>>
 let withDefault: (Js.Json.t, t<'a>, option<'a>) => Js.Json.t
 

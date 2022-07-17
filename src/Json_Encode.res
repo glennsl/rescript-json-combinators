@@ -33,6 +33,8 @@ let list = (encode, l) =>
     fill(1, tl)->Composite.jsonArray
   }
 
+let object = props => props->Js.Dict.fromArray->Composite.jsonDict
+
 let option = (encode, opt) =>
   switch opt {
   | None => null
