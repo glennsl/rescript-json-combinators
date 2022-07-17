@@ -29,4 +29,4 @@ let data = `{
   ]
 }`
 
-let _ = data->Js.Json.parseExn->Json.decode(Decode.polyline)->Js.log
+let _ = data->Json.parseExn->Json.decode(Decode.polyline)->Js.log
