@@ -15,3 +15,5 @@ let parseExn = str =>
   | Js.Exn.Error(ex) =>
     raise(ParseError(ex->Js.Exn.message->Js.Option.getWithDefault("Unknown error", _)))
   }
+
+@val external stringify: Js.Json.t => string = "JSON.stringify"
