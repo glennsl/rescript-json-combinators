@@ -3,6 +3,7 @@
 *.log
 tmp/
 
+*.bs.js
 .bsb.lock
 .merlin
 lib/
