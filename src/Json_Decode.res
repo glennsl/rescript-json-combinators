@@ -179,35 +179,39 @@ let field = (key, decode, . json) => {
   }
 }
 
-let object = (f, . json) => {
-  if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
-    raise(Error.expected("object", json))
-  }
+let object = f => {
+  let decoders = Obj.magic(Js.Obj.empty())
 
-  let optional = (. key, decode) => {
-    if !(%raw("key in json")) {
-      None
-    } else {
-      try {
-        let value = decode(. %raw("json[key]"))
-        Some(value)
-      } catch {
+  (. json) => {
+    if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
+      raise(Error.expected("object", json))
+    }
+
+    Obj.magic(decoders)["optional"] = (. key, decode) => {
+      if !(%raw("key in json")) {
+        None
+      } else {
+        try {
+          let value = decode(. %raw("json[key]"))
+          Some(value)
+        } catch {
+        | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
+        }
+      }
+    }
+
+    Obj.magic(decoders)["required"] = (. key, decode) => {
+      if !(%raw("key in json")) {
+        raise(DecodeError(`${key} required`))
+      }
+
+      try decode(. %raw("json[key]")) catch {
       | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
       }
     }
+
+    f(decoders)
   }
-
-  let required = (. key, decode) => {
-    if !(%raw("key in json")) {
-      raise(DecodeError(`${key} required`))
-    }
-
-    try decode(. %raw("json[key]")) catch {
-    | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
-    }
-  }
-
-  f({optional: optional, required: required})
 }
 
 let oneOf = (decoders, . json) => {
