@@ -42,8 +42,8 @@ module Encode = {
 
   let line = (~points, ~thickness=?, ()) =>
     Unsafe.object({
-      "points": array(point)(points),
-      "thickness": option(int)(thickness),
+      "points": array(point, points),
+      "thickness": option(int, thickness),
     })
 }
 
