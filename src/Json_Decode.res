@@ -68,7 +68,7 @@ let array = (decode) => (. json) => {
       let value = decode(. %raw("json[i]"))
       target->Array.unsafe_set(i, value)
     } catch {
-    | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin array at index $i`))
+    | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin array at index ${string_of_int(i)}`))
     }
   }
 
