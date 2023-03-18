@@ -14,9 +14,9 @@ external boolArray: array<bool> => Js.Json.t = "%identity"
 
 @val external null: Js.Json.t = "null"
 
-let array = (encode, arr) => arr->Js.Array2.map(encode)->jsonArray
+let array = encode => arr => arr->Js.Array2.map(x => encode(x))->jsonArray
 
-let list = (encode, l) =>
+let list = encode => l =>
   switch l {
   | list{} => jsonArray([])
   | list{hd, ...tl} =>
@@ -33,7 +33,7 @@ let list = (encode, l) =>
 
 let object = props => props->Js.Dict.fromArray->jsonDict
 
-let option = (encode, opt) =>
+let option = encode => opt =>
   switch opt {
   | None => null
   | Some(v) => v->encode
