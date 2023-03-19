@@ -6,7 +6,8 @@
     "build": "rescript build -with-deps",
     "start": "rescript build -w -with-deps",
     "clean": "rescript clean",
-    "fmt": "rescript format -all"
+    "fmt": "rescript format -all",
+		"test": "true"
   },
   "repository": {
     "type": "git",
