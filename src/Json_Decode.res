@@ -3,8 +3,8 @@ open Js.Json
 type t<'a> = (. Js.Json.t) => 'a
 
 type fieldDecoders = {
-  optional: 'a. (. string, t<'a>) => option<'a>,
-  required: 'a. (. string, t<'a>) => 'a,
+  optional: 'a. (. t<'a>) => option<'a>,
+  required: 'a. (. t<'a>) => 'a,
 }
 
 exception DecodeError(string)
@@ -61,11 +61,11 @@ let array = (decode, . json) => {
   }
 
   let source: array<Js.Json.t> = Obj.magic(json)
-  let target = %raw("new Array(json.length)")
+  let target = Obj.magic(source)
 
   for i in 0 to Array.length(source) - 1 {
     try {
-      let value = decode(. %raw("json[i]"))
+      let value = decode(. %raw("source[i]"))
       target->Array.unsafe_set(i, value)
     } catch {
     | DecodeError(msg) => raise(DecodeError(j`${msg}\n\tin array at index $i`))
@@ -74,8 +74,6 @@ let array = (decode, . json) => {
 
   target
 }
-
-let list = (decode, . json) => array(decode)(. json)->Array.to_list
 
 let option = (decode, . json) => {
   if Obj.magic(json) == Js.null {
@@ -101,6 +99,7 @@ let tuple2 = (decodeA, decodeB, . json) => {
     )
   }
 
+  // TODO mutate source
   try (decodeA(. arr->Array.unsafe_get(0)), decodeB(. arr->Array.unsafe_get(1))) catch {
   | DecodeError(msg) => raise(DecodeError(j`${msg}\n\tin pair`))
   }
@@ -121,6 +120,7 @@ let tuple3 = (decodeA, decodeB, decodeC, . json) => {
     )
   }
 
+  // TODO mutate source
   try (
     decodeA(. arr->Array.unsafe_get(0)),
     decodeB(. arr->Array.unsafe_get(1)),
@@ -144,6 +144,7 @@ let tuple4 = (decodeA, decodeB, decodeC, decodeD, . json) => {
     )
   }
 
+  // TODO mutate source
   try (
     decodeA(. arr->Array.unsafe_get(0)),
     decodeB(. arr->Array.unsafe_get(1)),
@@ -160,44 +161,24 @@ let dict = (decode, . json) => {
   }
 
   let source: Js.Dict.t<Js.Json.t> = Obj.magic(json)
+
+  // TODO mutate source
   try Js.Dict.map(decode, source)->Obj.magic catch {
   | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin dict'`))
   }
 }
 
-let field = (key, decode, . json) => {
-  if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
-    Error.expected("object", json)
-  }
+let object = f => {
+  let optional = (. decode) => decode->option->Obj.magic
+  let required = (. decode) => decode->Obj.magic
+  let decouders = f({optional: optional, required: required})
 
-  if !(%raw("key in json")) {
-    raise(DecodeError(`${key} required`))
-  }
-
-  try decode(. %raw("json[key]")) catch {
-  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
-  }
-}
-
-let object = (f, . json) => {
-  if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
-    raise(Error.expected("object", json))
-  }
-
-  let optional = (. key, decode) => {
-    if !(%raw("key in json")) {
-      None
-    } else {
-      try {
-        let value = decode(. %raw("json[key]"))
-        Some(value)
-      } catch {
-      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
-      }
+  (.json) => {
+    if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
+      raise(Error.expected("object", json))
     }
-  }
 
-  let required = (. key, decode) => {
+    // for key, decoder in decoders ...
     if !(%raw("key in json")) {
       raise(DecodeError(`${key} required`))
     }
@@ -206,8 +187,6 @@ let object = (f, . json) => {
     | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
     }
   }
-
-  f({optional: optional, required: required})
 }
 
 let oneOf = (decoders, . json) => {
