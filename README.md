@@ -117,6 +117,9 @@ Please see [LICENSE.LGPL-3.0](https://github.com/glennsl/rescript-json-combinato
 
 ## Changes
 
+### 1.2.0
+- add `Decode.flatMap`
+
 ### 1.1.0
 - recript v11-compatible formatting (#3)
 

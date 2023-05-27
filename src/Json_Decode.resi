@@ -35,5 +35,6 @@ let field: (string, t<'a>) => t<'a>
 
 let oneOf: array<t<'a>> => t<'a>
 let map: (t<'a>, (. 'a) => 'b) => t<'b>
+let flatMap: (t<'a>, (. 'a) => t<'b>) => t<'b>
 
 let decode: (Js.Json.t, t<'a>) => result<'a, string>

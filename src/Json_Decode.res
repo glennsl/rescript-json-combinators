@@ -237,6 +237,11 @@ let oneOf = decoders => (. json) => {
 
 let map = (decode, f) => (. json) => f(. decode(. json))
 
+let flatMap = (decodeA, f => (. json) => {
+  let decodeB = f(. decodeA(. json))
+  decodeB(. json)
+}
+
 let decode = (json, decode) =>
   try Ok(decode(. json)) catch {
   | DecodeError(msg) => Error(msg)
