@@ -1,6 +1,6 @@
 {
   "name": "@glennsl/rescript-json-combinators",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Combinator library for JSON decoding and encoding. ",
   "scripts": {
     "build": "rescript build -with-deps",
