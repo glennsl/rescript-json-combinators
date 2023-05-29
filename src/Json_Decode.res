@@ -237,7 +237,7 @@ let oneOf = decoders => (. json) => {
 
 let map = (decode, f) => (. json) => f(. decode(. json))
 
-let flatMap = (decodeA, f => (. json) => {
+let flatMap = (decodeA, f) => (. json) => {
   let decodeB = f(. decodeA(. json))
   decodeB(. json)
 }
