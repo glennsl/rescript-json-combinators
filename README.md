@@ -117,6 +117,9 @@ Please see [LICENSE.LGPL-3.0](https://github.com/glennsl/rescript-json-combinato
 
 ## Changes
 
+### 1.3.0
+- add `Decode.indirect` to help with decoding recursive data structures
+
 ### 1.2.0
 - add `Decode.flatMap`
 
