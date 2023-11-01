@@ -9,6 +9,9 @@
     "fmt": "rescript format -all",
     "test": "true"
   },
+  "engines" : {
+    "node" : "*"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/glennsl/rescript-json-combinators.git"
