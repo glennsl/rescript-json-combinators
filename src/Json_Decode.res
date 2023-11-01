@@ -242,6 +242,8 @@ let flatMap = (decodeA, f) => (. json) => {
   decodeB(. json)
 }
 
+let indirect = f => (. json) => f()(. json)
+
 let decode = (json, decode) =>
   try Ok(decode(. json)) catch {
   | DecodeError(msg) => Error(msg)
