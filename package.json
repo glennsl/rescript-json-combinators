@@ -16,21 +16,15 @@
     "type": "git",
     "url": "git+https://github.com/glennsl/rescript-json-combinators.git"
   },
-  "keywords": [
-    "rescript",
-    "json"
-  ],
+  "keywords": ["rescript", "json"],
   "author": "glennsl",
   "license": "(LGPL-3.0 OR MPL-2.0)",
   "bugs": {
     "url": "https://github.com/glennsl/rescript-json-combinators/issues"
   },
   "homepage": "https://github.com/glennsl/rescript-json-combinators#readme",
-  "files": [
-    "src/*.res*",
-    "bsconfig.json"
-  ],
+  "files": ["src/*.res*", "bsconfig.json"],
   "devDependencies": {
-    "rescript": "^9.1.4"
+    "rescript": "^11.0.1"
   }
 }
