@@ -10,14 +10,14 @@ let array: t<'a> => t<array<'a>>
 let list: t<'a> => t<list<'a>>
 let object: array<(string, Js.Json.t)> => Js.Json.t
 let option: t<'a> => t<option<'a>>
-let withDefault: (Js.Json.t, t<'a>, option<'a>) => Js.Json.t
+let withDefault: (Js.Json.t, t<'a>) => option<'a> => Js.Json.t
 
 let date: Js.Date.t => Js.Json.t
-let pair: (t<'a>, t<'b>, ('a, 'b)) => Js.Json.t
-let tuple2: (t<'a>, t<'b>, ('a, 'b)) => Js.Json.t
-let tuple3: (t<'a>, t<'b>, t<'c>, ('a, 'b, 'c)) => Js.Json.t
-let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>, ('a, 'b, 'c, 'd)) => Js.Json.t
-let dict: (t<'a>, Js.Dict.t<'a>) => Js.Json.t
+let pair: (t<'a>, t<'b>) => (('a, 'b)) => Js.Json.t
+let tuple2: (t<'a>, t<'b>) => (('a, 'b)) => Js.Json.t
+let tuple3: (t<'a>, t<'b>, t<'c>) => (('a, 'b, 'c)) => Js.Json.t
+let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>) => (('a, 'b, 'c, 'd)) => Js.Json.t
+let dict: t<'a> => Js.Dict.t<'a> => Js.Json.t
 
 // Short-hands for zero-cost composite primitives
 external jsonDict: Js.Dict.t<Js.Json.t> => Js.Json.t = "%identity"
