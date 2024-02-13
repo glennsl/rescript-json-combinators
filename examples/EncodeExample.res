@@ -6,7 +6,7 @@ let _ = ["foo", "bar"]->Json.Encode.stringArray->Js.log
 
 // Encode string array, slower but more flexible
 // prints ["foo", "bar"]
-let _ = ["foo", "bar"]->Json.Encode.array(Json.Encode.string, _)->Js.log
+let _ = ["foo", "bar"]->Json.Encode.array(Json.Encode.string)(_)->Js.log
 
 // Encode object, fast but unsafe because it cannot guarantee that it only contains valid JSON
 // prints { x: 42, foo: 'bar' }
@@ -42,8 +42,8 @@ module Encode = {
 
   let line = (~points, ~thickness=?, ()) =>
     Unsafe.object({
-      "points": array(point, points),
-      "thickness": option(int, thickness),
+      "points": array(point)(points),
+      "thickness": option(int)(thickness),
     })
 }
 
