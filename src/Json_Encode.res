@@ -20,12 +20,12 @@ let list = encode => l =>
   switch l {
   | list{} => jsonArray([])
   | list{hd, ...tl} =>
-    let arr = Array.make(l->List.length, hd->encode)
+    let arr = Array.make(~length=l->List.length, hd->encode)
     let rec fill = (i, l) =>
       switch l {
       | list{} => arr
       | list{hd, ...tl} =>
-        Array.unsafe_set(arr, i, hd->encode)
+        Array.setUnsafe(arr, i, hd->encode)
         fill(i + 1, tl)
       }
     fill(1, tl)->jsonArray

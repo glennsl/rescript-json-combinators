@@ -10,7 +10,7 @@ type fieldDecoders = {
 exception DecodeError(string)
 
 module Error = {
-  let expected = (kind, json) => raise(DecodeError(`Expected ${kind}, got ${stringify(json)}`))
+  let expected = (kind, json) => throw(DecodeError(`Expected ${kind}, got ${stringify(json)}`))
 }
 
 let custom = f => f
@@ -66,16 +66,16 @@ let array = (decode) => (. json) => {
   for i in 0 to Array.length(source) - 1 {
     try {
       let value = decode(. %raw("json[i]"))
-      target->Array.unsafe_set(i, value)
+      target->Array.setUnsafe(i, value)
     } catch {
-    | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin array at index ${string_of_int(i)}`))
+    | DecodeError(msg) => throw(DecodeError(`${msg}\n\tin array at index ${Int.toString(i)}`))
     }
   }
 
   target
 }
 
-let list = (decode) => (. json) => array(decode)(. json)->Array.to_list
+let list = (decode) => (. json) => array(decode)(. json)->List.fromArray
 
 let option = decode => (. json) => {
   if Obj.magic(json) == Js.null {
@@ -94,15 +94,15 @@ let tuple2 = (decodeA, decodeB) => (. json) => {
 
   let arr: array<Js.Json.t> = Obj.magic(json)
   if Array.length(arr) != 2 {
-    raise(
+    throw(
       DecodeError(
-        `Expected array of length 2, got array of length ${Array.length(arr)->string_of_int}`,
+        `Expected array of length 2, got array of length ${Array.length(arr)->Int.toString}`,
       ),
     )
   }
 
-  try (decodeA(. arr->Array.unsafe_get(0)), decodeB(. arr->Array.unsafe_get(1))) catch {
-  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin pair`))
+  try (decodeA(. arr->Array.getUnsafe(0)), decodeB(. arr->Array.getUnsafe(1))) catch {
+  | DecodeError(msg) => throw(DecodeError(`${msg}\n\tin pair`))
   }
 }
 let pair = tuple2
@@ -114,19 +114,19 @@ let tuple3 = (decodeA, decodeB, decodeC) => (. json) => {
 
   let arr: array<Js.Json.t> = Obj.magic(json)
   if Array.length(arr) != 3 {
-    raise(
+    throw(
       DecodeError(
-        `Expected array of length 3, got array of length ${Array.length(arr)->string_of_int}`,
+        `Expected array of length 3, got array of length ${Array.length(arr)->Int.toString}`,
       ),
     )
   }
 
   try (
-    decodeA(. arr->Array.unsafe_get(0)),
-    decodeB(. arr->Array.unsafe_get(1)),
-    decodeC(. arr->Array.unsafe_get(2)),
+    decodeA(. arr->Array.getUnsafe(0)),
+    decodeB(. arr->Array.getUnsafe(1)),
+    decodeC(. arr->Array.getUnsafe(2)),
   ) catch {
-  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin pair`))
+  | DecodeError(msg) => throw(DecodeError(`${msg}\n\tin pair`))
   }
 }
 
@@ -137,20 +137,20 @@ let tuple4 = (decodeA, decodeB, decodeC, decodeD) => (. json) => {
 
   let arr: array<Js.Json.t> = Obj.magic(json)
   if Array.length(arr) != 4 {
-    raise(
+    throw(
       DecodeError(
-        `Expected array of length 4, got array of length ${Array.length(arr)->string_of_int}`,
+        `Expected array of length 4, got array of length ${Array.length(arr)->Int.toString}`,
       ),
     )
   }
 
   try (
-    decodeA(. arr->Array.unsafe_get(0)),
-    decodeB(. arr->Array.unsafe_get(1)),
-    decodeC(. arr->Array.unsafe_get(2)),
-    decodeD(. arr->Array.unsafe_get(3)),
+    decodeA(. arr->Array.getUnsafe(0)),
+    decodeB(. arr->Array.getUnsafe(1)),
+    decodeC(. arr->Array.getUnsafe(2)),
+    decodeD(. arr->Array.getUnsafe(3)),
   ) catch {
-  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin pair`))
+  | DecodeError(msg) => throw(DecodeError(`${msg}\n\tin pair`))
   }
 }
 
@@ -161,7 +161,7 @@ let dict = decode => (. json) => {
 
   let source: Js.Dict.t<Js.Json.t> = Obj.magic(json)
   try Js.Dict.map(decode, source)->Obj.magic catch {
-  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin dict'`))
+  | DecodeError(msg) => throw(DecodeError(`${msg}\n\tin dict'`))
   }
 }
 
@@ -171,17 +171,17 @@ let field = (key, decode) => (. json) => {
   }
 
   if !(%raw("key in json")) {
-    raise(DecodeError(`${key} required`))
+    throw(DecodeError(`${key} required`))
   }
 
   try decode(. %raw("json[key]")) catch {
-  | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
+  | DecodeError(msg) => throw(DecodeError(`${msg}\n\tat field '${key}'`))
   }
 }
 
 let object = f => (. json) => {
   if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
-    raise(Error.expected("object", json))
+    throw(Error.expected("object", json))
   }
 
   let optional = (. key, decode) => {
@@ -192,18 +192,18 @@ let object = f => (. json) => {
         let value = decode(. %raw("json[key]"))
         Some(value)
       } catch {
-      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
+      | DecodeError(msg) => throw(DecodeError(`${msg}\n\tat field '${key}'`))
       }
     }
   }
 
   let required = (. key, decode) => {
     if !(%raw("key in json")) {
-      raise(DecodeError(`${key} required`))
+      throw(DecodeError(`${key} required`))
     }
 
     try decode(. %raw("json[key]")) catch {
-    | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '${key}'`))
+    | DecodeError(msg) => throw(DecodeError(`${msg}\n\tat field '${key}'`))
     }
   }
 
@@ -215,7 +215,7 @@ let oneOf = decoders => (. json) => {
 
   let rec loop = i => {
     if i >= Array.length(decoders) {
-      raise(
+      throw(
         DecodeError(
           `All decoders given to oneOf failed. Here are all the errors:\n- ${errors->Js.Array2.joinWith(
               "\n",
@@ -224,7 +224,7 @@ let oneOf = decoders => (. json) => {
       )
     }
 
-    let decode = Array.unsafe_get(decoders, i)
+    let decode = Array.getUnsafe(decoders, i)
     try decode(. json) catch {
     | DecodeError(err) =>
       errors->Js.Array2.push(err)->ignore
