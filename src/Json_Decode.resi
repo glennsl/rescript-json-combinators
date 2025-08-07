@@ -1,8 +1,8 @@
 type t<'a>
 
 type fieldDecoders = {
-  optional: 'a. (. string, t<'a>) => option<'a>,
-  required: 'a. (. string, t<'a>) => 'a,
+  optional: 'a. (string, t<'a>) => option<'a>,
+  required: 'a. (string, t<'a>) => 'a,
 }
 
 exception DecodeError(string)
@@ -11,7 +11,7 @@ module Error: {
   let expected: (string, Js.Json.t) => _
 }
 
-let custom: ((. Js.Json.t) => 'a) => t<'a>
+let custom: (Js.Json.t => 'a) => t<'a>
 
 let id: t<Js.Json.t>
 
@@ -34,9 +34,9 @@ let dict: t<'a> => t<Js.Dict.t<'a>>
 let field: (string, t<'a>) => t<'a>
 
 let oneOf: array<t<'a>> => t<'a>
-let map: (t<'a>, (. 'a) => 'b) => t<'b>
-let flatMap: (t<'a>, (. 'a) => t<'b>) => t<'b>
+let map: (t<'a>, 'a => 'b) => t<'b>
+let flatMap: (t<'a>, 'a => t<'b>) => t<'b>
 
-let indirect: (() => t<'a>) => t<'a>
+let indirect: (unit => t<'a>) => t<'a>
 
 let decode: (Js.Json.t, t<'a>) => result<'a, string>
