@@ -117,6 +117,9 @@ Please see [LICENSE.LGPL-3.0](https://github.com/glennsl/rescript-json-combinato
 
 ## Changes
 
+### 1.5.0
+- BREAKING: updated to rescript 12
+
 ### 1.4.0
 - explicitly curried encode combinators to reduce breakage in rescript 11 uncurried mode
 - updated examples to rescript 11
