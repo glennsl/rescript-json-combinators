@@ -12,13 +12,13 @@ module Decode = {
   open Json.Decode
 
   let point = object(field => {
-    x: field.required(. "x", int),
-    y: field.required(. "y", int),
+    x: field.required("x", int),
+    y: field.required("y", int),
   })
 
   let polyline = object(field => {
-    points: field.required(. "points", array(point)),
-    thickness: field.optional(. "thickness", int),
+    points: field.required("points", array(point)),
+    thickness: field.optional("thickness", int),
   })
 }
 
@@ -29,4 +29,4 @@ let data = `{
   ]
 }`
 
-let _ = data->Json.parseExn->Json.decode(Decode.polyline)->Js.log
+let _ = data->Json.parseExn->Json.decode(Decode.polyline)->Console.log

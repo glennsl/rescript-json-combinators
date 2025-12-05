@@ -1,6 +1,4 @@
-open Js.Json
-
-type t<'a> = Js.Json.t => 'a
+type t<'a> = JSON.t => 'a
 
 type fieldDecoders = {
   optional: 'a. (string, t<'a>) => option<'a>,
@@ -10,7 +8,7 @@ type fieldDecoders = {
 exception DecodeError(string)
 
 module Error = {
-  let expected = (kind, json) => throw(DecodeError(`Expected ${kind}, got ${stringify(json)}`))
+  let expected = (kind, json) => throw(DecodeError(`Expected ${kind}, got ${JSON.stringify(json)}`))
 }
 
 let custom = f => f
@@ -18,7 +16,7 @@ let custom = f => f
 let id = json => json
 
 let float = json => {
-  if Js.typeof(json) != "number" {
+  if typeof(json) != #number {
     Error.expected("float", json)
   }
 
@@ -26,13 +24,13 @@ let float = json => {
 }
 
 let int = json => {
-  if Js.typeof(json) != "number" {
+  if typeof(json) != #number {
     Error.expected("int", json)
   }
 
   let truncated: float = %raw("json | 0")
   let num: float = Obj.magic(json)
-  if truncated != num || !Js.Float.isFinite(num) {
+  if truncated != num || !Float.isFinite(num) {
     Error.expected("int", json)
   }
 
@@ -40,7 +38,7 @@ let int = json => {
 }
 
 let bool = json => {
-  if Js.typeof(json) != "boolean" {
+  if typeof(json) != #boolean {
     Error.expected("bool", json)
   }
 
@@ -48,7 +46,7 @@ let bool = json => {
 }
 
 let string = json => {
-  if Js.typeof(json) != "string" {
+  if typeof(json) != #string {
     Error.expected("string", json)
   }
 
@@ -57,11 +55,11 @@ let string = json => {
 
 let array = decode =>
   json => {
-    if !Js.Array.isArray(json) {
+    if !Array.isArray(json) {
       Error.expected("array", json)
     }
 
-    let source: array<Js.Json.t> = Obj.magic(json)
+    let source: array<JSON.t> = Obj.magic(json)
     let target = %raw("new Array(json.length)")
 
     for i in 0 to Array.length(source) - 1 {
@@ -80,22 +78,22 @@ let list = decode => json => array(decode)(json)->List.fromArray
 
 let option = decode =>
   json => {
-    if Obj.magic(json) == Js.null {
+    if Obj.magic(json) == null {
       None
     } else {
       Some(decode(json))
     }
   }
 
-let date = json => string(json)->Js.Date.fromString
+let date = json => string(json)->Date.fromString
 
 let tuple2 = (decodeA, decodeB) =>
   json => {
-    if !Js.Array.isArray(json) {
+    if !Array.isArray(json) {
       Error.expected("array", json)
     }
 
-    let arr: array<Js.Json.t> = Obj.magic(json)
+    let arr: array<JSON.t> = Obj.magic(json)
     if Array.length(arr) != 2 {
       throw(
         DecodeError(
@@ -112,11 +110,11 @@ let pair = tuple2
 
 let tuple3 = (decodeA, decodeB, decodeC) =>
   json => {
-    if !Js.Array.isArray(json) {
+    if !Array.isArray(json) {
       Error.expected("array", json)
     }
 
-    let arr: array<Js.Json.t> = Obj.magic(json)
+    let arr: array<JSON.t> = Obj.magic(json)
     if Array.length(arr) != 3 {
       throw(
         DecodeError(
@@ -136,11 +134,11 @@ let tuple3 = (decodeA, decodeB, decodeC) =>
 
 let tuple4 = (decodeA, decodeB, decodeC, decodeD) =>
   json => {
-    if !Js.Array.isArray(json) {
+    if !Array.isArray(json) {
       Error.expected("array", json)
     }
 
-    let arr: array<Js.Json.t> = Obj.magic(json)
+    let arr: array<JSON.t> = Obj.magic(json)
     if Array.length(arr) != 4 {
       throw(
         DecodeError(
@@ -161,19 +159,19 @@ let tuple4 = (decodeA, decodeB, decodeC, decodeD) =>
 
 let dict = decode =>
   json => {
-    if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
+    if typeof(json) != #object || Array.isArray(json) || Obj.magic(json) == null {
       Error.expected("object", json)
     }
 
-    let source: Js.Dict.t<Js.Json.t> = Obj.magic(json)
-    try Js.Dict.map(decode, source)->Obj.magic catch {
+    let source: Dict.t<JSON.t> = Obj.magic(json)
+    try source->Dict.mapValues(decode)->Obj.magic catch {
     | DecodeError(msg) => throw(DecodeError(`${msg}\n\tin dict'`))
     }
   }
 
 let field = (key, decode) =>
   json => {
-    if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
+    if typeof(json) != #object || Array.isArray(json) || Obj.magic(json) == null {
       Error.expected("object", json)
     }
 
@@ -188,7 +186,7 @@ let field = (key, decode) =>
 
 let object = f =>
   json => {
-    if Js.typeof(json) != "object" || Js.Array.isArray(json) || Obj.magic(json) == Js.null {
+    if typeof(json) != #object || Array.isArray(json) || Obj.magic(json) == null {
       throw(Error.expected("object", json))
     }
 
@@ -226,9 +224,9 @@ let oneOf = decoders =>
       if i >= Array.length(decoders) {
         throw(
           DecodeError(
-            `All decoders given to oneOf failed. Here are all the errors:\n- ${errors->Js.Array2.joinWith(
+            `All decoders given to oneOf failed. Here are all the errors:\n- ${errors->Array.join(
                 "\n",
-              )}\nAnd the JSON being decoded: ${stringify(json)}`,
+              )}\nAnd the JSON being decoded: ${JSON.stringify(json)}`,
           ),
         )
       }
@@ -236,7 +234,7 @@ let oneOf = decoders =>
       let decode = Array.getUnsafe(decoders, i)
       try decode(json) catch {
       | DecodeError(err) =>
-        errors->Js.Array2.push(err)->ignore
+        errors->Array.push(err)->ignore
         loop(i + 1)
       }
     }
