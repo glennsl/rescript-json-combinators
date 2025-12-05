@@ -17,10 +17,10 @@ let pair: (t<'a>, t<'b>) => (('a, 'b)) => JSON.t
 let tuple2: (t<'a>, t<'b>) => (('a, 'b)) => JSON.t
 let tuple3: (t<'a>, t<'b>, t<'c>) => (('a, 'b, 'c)) => JSON.t
 let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>) => (('a, 'b, 'c, 'd)) => JSON.t
-let dict: t<'a> => Js.dict<'a> => JSON.t
+let dict: t<'a> => dict<'a> => JSON.t
 
 // Short-hands for zero-cost composite primitives
-external jsonDict: Js.dict<JSON.t> => JSON.t = "%identity"
+external jsonDict: dict<JSON.t> => JSON.t = "%identity"
 external jsonArray: array<JSON.t> => JSON.t = "%identity"
 external stringArray: array<string> => JSON.t = "%identity"
 external intArray: array<int> => JSON.t = "%identity"
