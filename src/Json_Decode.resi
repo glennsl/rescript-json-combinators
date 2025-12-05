@@ -8,12 +8,12 @@ type fieldDecoders = {
 exception DecodeError(string)
 
 module Error: {
-  let expected: (string, Js.Json.t) => _
+  let expected: (string, JSON.t) => _
 }
 
-let custom: (Js.Json.t => 'a) => t<'a>
+let custom: (JSON.t => 'a) => t<'a>
 
-let id: t<Js.Json.t>
+let id: t<JSON.t>
 
 let float: t<float>
 let int: t<int>
@@ -25,12 +25,12 @@ let list: t<'a> => t<list<'a>>
 let object: (fieldDecoders => 'a) => t<'a>
 let option: t<'a> => t<option<'a>>
 
-let date: t<Js.Date.t>
+let date: t<Date.t>
 let pair: (t<'a>, t<'b>) => t<('a, 'b)>
 let tuple2: (t<'a>, t<'b>) => t<('a, 'b)>
 let tuple3: (t<'a>, t<'b>, t<'c>) => t<('a, 'b, 'c)>
 let tuple4: (t<'a>, t<'b>, t<'c>, t<'d>) => t<('a, 'b, 'c, 'd)>
-let dict: t<'a> => t<Js.Dict.t<'a>>
+let dict: t<'a> => t<dict<'a>>
 let field: (string, t<'a>) => t<'a>
 
 let oneOf: array<t<'a>> => t<'a>
@@ -39,4 +39,4 @@ let flatMap: (t<'a>, 'a => t<'b>) => t<'b>
 
 let indirect: (unit => t<'a>) => t<'a>
 
-let decode: (Js.Json.t, t<'a>) => result<'a, string>
+let decode: (JSON.t, t<'a>) => result<'a, string>

@@ -1,20 +1,20 @@
-type t<'a> = 'a => Js.Json.t
+type t<'a> = 'a => JSON.t
 
-external int: int => Js.Json.t = "%identity"
-external float: float => Js.Json.t = "%identity"
-external bool: bool => Js.Json.t = "%identity"
-external string: string => Js.Json.t = "%identity"
+external int: int => JSON.t = "%identity"
+external float: float => JSON.t = "%identity"
+external bool: bool => JSON.t = "%identity"
+external string: string => JSON.t = "%identity"
 
-external jsonDict: Js.Dict.t<Js.Json.t> => Js.Json.t = "%identity"
-external jsonArray: array<Js.Json.t> => Js.Json.t = "%identity"
-external stringArray: array<string> => Js.Json.t = "%identity"
-external intArray: array<int> => Js.Json.t = "%identity"
-external floatArray: array<float> => Js.Json.t = "%identity"
-external boolArray: array<bool> => Js.Json.t = "%identity"
+external jsonDict: dict<JSON.t> => JSON.t = "%identity"
+external jsonArray: array<JSON.t> => JSON.t = "%identity"
+external stringArray: array<string> => JSON.t = "%identity"
+external intArray: array<int> => JSON.t = "%identity"
+external floatArray: array<float> => JSON.t = "%identity"
+external boolArray: array<bool> => JSON.t = "%identity"
 
-@val external null: Js.Json.t = "null"
+@val external null: JSON.t = "null"
 
-let array = encode => arr => arr->Js.Array2.map(x => encode(x))->jsonArray
+let array = encode => arr => arr->Array.map(x => encode(x))->jsonArray
 
 let list = encode =>
   l =>
@@ -32,7 +32,7 @@ let list = encode =>
       fill(1, tl)->jsonArray
     }
 
-let object = props => props->Js.Dict.fromArray->jsonDict
+let object = props => props->Dict.fromArray->jsonDict
 
 let option = encode =>
   opt =>
@@ -48,7 +48,7 @@ let withDefault = (default, encode) =>
     | Some(v) => v->encode
     }
 
-let date = date => date->Js.Date.toJSONUnsafe->string
+let date = date => date->Date.toJSON->Option.getUnsafe->string
 
 let pair = (encodeA, encodeB) => ((a, b)) => [a->encodeA, b->encodeB]->jsonArray
 let tuple2 = (encodeA, encodeB) => ((a, b)) => [a->encodeA, b->encodeB]->jsonArray
@@ -57,8 +57,8 @@ let tuple3 = (encodeA, encodeB, encodeC) =>
 let tuple4 = (encodeA, encodeB, encodeC, encodeD) =>
   ((a, b, c, d)) => [a->encodeA, b->encodeB, c->encodeC, d->encodeD]->jsonArray
 
-let dict = encode => dict => Js.Dict.map(v => encode(v), dict)->jsonDict
+let dict = encode => dict => dict->Dict.mapValues(encode)->jsonDict
 
 module Unsafe = {
-  external object: {..} => Js.Json.t = "%identity"
+  external object: {..} => JSON.t = "%identity"
 }

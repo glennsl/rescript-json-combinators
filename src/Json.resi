@@ -3,9 +3,9 @@ module Decode = Json_Decode
 
 exception ParseError(string)
 
-let decode: (Js.Json.t, Decode.t<'a>) => result<'a, string>
+let decode: (JSON.t, Decode.t<'a>) => result<'a, string>
 
-let parse: string => result<Js.Json.t, string>
-let parseExn: string => Js.Json.t
+let parse: string => result<JSON.t, string>
+let parseExn: string => JSON.t
 
-@val external stringify: Js.Json.t => string = "JSON.stringify"
+@val external stringify: JSON.t => string = "JSON.stringify"
