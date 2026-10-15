@@ -1,6 +1,8 @@
 {
   "name": "@glennsl/rescript-json-combinators",
   "namespace": "JsonCombinators",
+  "package-specs": {"module": "esmodule", "in-source": true},
+  "suffix": ".mjs",
   "sources": [
     "src",
     {

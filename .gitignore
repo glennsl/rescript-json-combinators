@@ -4,6 +4,8 @@
 tmp/
 
 *.bs.js
+src/*.mjs
+examples/*.mjs
 .bsb.lock
 .merlin
 lib/

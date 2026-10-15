@@ -250,6 +250,11 @@ let flatMap = (decodeA, f) =>
     decodeB(json)
   }
 
+let recursive = build => {
+  let rec decode = json => build(decode)(json)
+  decode
+}
+
 let indirect = f => json => f()(json)
 
 let decode = (json, decode) =>

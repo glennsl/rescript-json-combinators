@@ -7,7 +7,7 @@
         "start": "rescript watch",
         "clean": "rescript clean",
         "fmt": "rescript format",
-        "test": "true"
+        "test": "npm run build && node --test test/*.test.mjs"
     },
     "engines": {
         "node": "*"
