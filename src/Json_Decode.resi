@@ -37,6 +37,9 @@ let oneOf: array<t<'a>> => t<'a>
 let map: (t<'a>, 'a => 'b) => t<'b>
 let flatMap: (t<'a>, 'a => t<'b>) => t<'b>
 
+/** Builds a self-referencing decoder, deferring the builder until decoding. */
+let recursive: (t<'a> => t<'a>) => t<'a>
+
 let indirect: (unit => t<'a>) => t<'a>
 
 let decode: (JSON.t, t<'a>) => result<'a, string>

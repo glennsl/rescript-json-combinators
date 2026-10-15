@@ -117,6 +117,9 @@ Please see [LICENSE.LGPL-3.0](https://github.com/glennsl/rescript-json-combinato
 
 ## Changes
 
+### 1.6.0
+- add `Decode.recursive` for self-referencing decoders
+
 ### 1.5.0
 - BREAKING: updated to rescript 12
 
